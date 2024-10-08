@@ -1,6 +1,9 @@
 <script lang="ts">
 	import axios from 'axios';
-	import { getCurrentUser, user } from '../../stores/auth.svelte';
+	import { getCurrentUser } from '$lib/stores/auth.svelte';
+	import { redirect } from '@sveltejs/kit';
+	import { goto } from '$app/navigation';
+	import { pushNotifications } from '$lib/stores/notifications.svelte';
 
 	let showPassword = $state(false);
 	let passwordInput = $derived(showPassword ? 'text' : 'password');
@@ -9,7 +12,10 @@
 	let passwordErrors = $state('');
 	let passwordErrorRing = $derived(passwordErrors.length > 0);
 
+	let isLoading = $state(false);
+
 	const handleSubmit = async (e: SubmitEvent) => {
+		isLoading = true;
 		emailErrors = '';
 		passwordErrors = '';
 		e.preventDefault();
@@ -28,11 +34,11 @@
 					withCredentials: true
 				}
 			);
-			console.log(res.data);
-      getCurrentUser();
+			pushNotifications(res.data.msg);
+			getCurrentUser();
+			goto('/');
 		} catch (err) {
 			if (axios.isAxiosError(err)) {
-				console.log(err.response?.data);
 				if (err.response?.data.email) {
 					emailErrors = err.response?.data.email[0];
 				}
@@ -41,19 +47,18 @@
 				}
 			}
 		}
+		isLoading = false;
 	};
-	console.log(user.name);
 </script>
 
 <svelte:head>
 	<title>Login</title>
 </svelte:head>
 
-<h1>User: {user.name}</h1>
-
-<form onsubmit={(e) => handleSubmit(e)} class="mx-auto mt-24 flex w-[40rem] flex-col gap-4">
+<form onsubmit={(e) => handleSubmit(e)} class="mx-auto mt-32 flex w-[32rem] flex-col gap-5">
 	<div class="grid gap-1">
-		<label for="email" class:text-rose-500={emailErrorRing} class="text-sm select-none">Email</label>
+		<label for="email" class:text-rose-500={emailErrorRing} class="select-none text-sm">Email</label
+		>
 		<input
 			id="email"
 			class:err-ring={emailErrorRing}
@@ -68,7 +73,7 @@
 
 	<div class="relative grid gap-1">
 		<div
-			class="absolute bottom-[13px] right-2 cursor-pointer"
+			class="absolute right-2 top-[35px] cursor-pointer"
 			onclick={() => (showPassword = !showPassword)}
 			role="button"
 			tabindex={-1}
@@ -116,7 +121,9 @@
 			{/if}
 		</div>
 
-		<label for="password" class:text-rose-500={passwordErrorRing} class="text-sm select-none">Password</label>
+		<label for="password" class:text-rose-500={passwordErrorRing} class="select-none text-sm"
+			>Password</label
+		>
 		<input
 			id="password"
 			class:err-ring={passwordErrorRing}
@@ -129,11 +136,26 @@
 		<small class="text-rose-500">{passwordErrors}</small>
 	</div>
 	<button
-		class="w-fit rounded border-none bg-fuchsia-500 px-5 py-3 text-slate-900 outline-none select-none transition-all ease-out hover:bg-fuchsia-500/90 ring-fuchsia-500 ring-offset-slate-900 focus-visible:ring-2 focus-visible:ring-offset-2"
-		>Submit</button
+		class:animate-pulse={isLoading}
+		disabled={isLoading}
+		class="w-fit select-none rounded border-none bg-fuchsia-500 px-6 py-3 text-sm text-slate-900 outline-none ring-fuchsia-500 ring-offset-slate-900 transition-all ease-out hover:bg-fuchsia-500/90 focus-visible:ring-2 focus-visible:ring-offset-2"
 	>
+		{#if isLoading}
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-spin" viewBox="0 0 24 24"
+				><path
+					fill="none"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 3a9 9 0 1 0 9 9"
+				/></svg
+			>
+		{:else}
+			Submit
+		{/if}
+	</button>
 </form>
-<pre></pre>
 
 <style>
 	.err-ring {
