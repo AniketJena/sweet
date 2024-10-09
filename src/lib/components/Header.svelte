@@ -22,7 +22,7 @@
 </script>
 
 <header
-	class="z-10 col-start-1 col-end-4 row-start-1 row-end-1 flex items-center justify-between border-b-2 border-b-slate-900 bg-black/5 p-5 backdrop-blur"
+	class="z-10 col-start-1 col-end-4 row-start-1 row-end-1 flex items-center justify-between border-b-2 border-b-slate-900 bg-black/5 px-5 py-3 backdrop-blur"
 >
 	<div>
 		<a href="/" class="sweet group -space-x-1 whitespace-nowrap text-xl">

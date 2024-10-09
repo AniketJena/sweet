@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { user } from '$lib/stores/auth.svelte';
-	import { serverStore } from '$lib/stores/servers.svelte';
+	import { serverStore, getServerChannels } from '$lib/stores/servers.svelte';
 	const { serverId } = $props();
+
+	$effect(() => {
+		getServerChannels(serverId as string);
+	});
 </script>
 
 {#if user.name}
@@ -9,7 +13,11 @@
 		<small class="mb-4 text-slate-400">CHANNELS</small>
 		<div class="grid gap-3">
 			{#each serverStore.currentChannelData as channel}
-				<a href={`/${serverId}/${channel.id}`} class="text-lg font-medium"># {channel.name}</a>
+				<a
+					href={`/${serverId}/${channel.id}`}
+					data-sveltekit-preload-data="hover"
+					class="text-lg font-medium"># {channel.name}</a
+				>
 			{/each}
 		</div>
 	</div>

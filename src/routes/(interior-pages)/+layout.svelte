@@ -23,7 +23,7 @@
 			class="col-start-1 col-end-2 row-span-2 flex h-full flex-col gap-3 border-r-2 border-r-slate-900 pl-4 pr-2 pt-3"
 		>
 			{#each serverStore.serverData as server}
-				<a href={`/${server.serverId}`} class="">
+				<a href={`/${server.serverId}`} data-sveltekit-preload-data="hover">
 					<div
 						class="leading-2 grid h-10 w-10 place-items-center rounded-full bg-indigo-500 p-2 font-mono text-xl font-bold capitalize"
 					>
@@ -44,11 +44,12 @@
 </main>
 
 <style scoped>
-main {
-  display: grid;
-  height: 100dvh;
-  grid-auto-flow: column;
-  grid-auto-columns: 4rem 13rem auto;
-  grid-auto-rows: min-content 1fr;
-}
+	main {
+		display: grid;
+		max-height: 100dvh;
+		grid-auto-flow: column;
+		grid-auto-columns: 4rem 13rem auto;
+		grid-auto-rows: min-content auto;
+    overflow-y: hidden;
+	}
 </style>
