@@ -1,13 +1,17 @@
 <script lang="ts">
-	let m: Tmessage = $props();
+	let { m, showOnlyContent = false, removeTopPadding = false }: Tmessage = $props();
 
 	type Tmessage = {
-		id: string;
-		content: string;
-		createdAt: Date;
-		authorId: string;
-		channelId: string;
-		authorName: string;
+		m: {
+			id: string;
+			content: string;
+			createdAt: Date;
+			authorId: string;
+			channelId: string;
+			authorName: string;
+		};
+		showOnlyContent?: boolean;
+		removeTopPadding?: boolean;
 	};
 
 	let formattedCreatedAt = $derived.by(() => {
@@ -32,14 +36,18 @@
 	});
 </script>
 
-<div class="w-full p-4">
-	<div class="font-semibold text-white">
-		{m.authorName}
-		{#if m.createdAt}
-			<span class="ml-1 text-[0.8rem] font-thin leading-snug tracking-wide text-slate-400">
-				<time>{formattedCreatedAt}</time>
-			</span>
-		{/if}
-	</div>
-	<p>{m.content}</p>
+<div class="w-full p-4 pb-0" class:pt-0={showOnlyContent || removeTopPadding}>
+	{#if showOnlyContent}
+		<p>{m.content}</p>
+	{:else}
+		<div class="font-semibold text-white">
+			{m.authorName}
+			{#if m.createdAt}
+				<span class="ml-1 text-[0.8rem] font-thin leading-snug tracking-wide text-slate-400">
+					<time>{formattedCreatedAt}</time>
+				</span>
+			{/if}
+		</div>
+		<p>{m.content}</p>
+	{/if}
 </div>
