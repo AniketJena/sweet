@@ -1,14 +1,16 @@
 <script lang="ts">
 	import axios from 'axios';
+	import Message from './Message.svelte';
 
 	const { serverId, channelId } = $props();
 	const socket = $state(new WebSocket(`ws://localhost:3000/ws/${serverId}/${channelId}`));
 	type Tmessage = {
-		id?: string;
+		id: string;
 		content: string;
-		createdAt?: Date;
-		authorId?: string;
-		channelId?: string;
+		createdAt: Date;
+		authorId: string;
+		channelId: string;
+		authorName: string;
 	};
 	let messages = $state<Tmessage[]>([]);
 
@@ -42,21 +44,23 @@
 	});
 
 	$effect(() => {
-    onNewMessage()
-    messages && scrollToBottom()
+		onNewMessage();
+		messages && scrollToBottom();
 	});
 </script>
 
 <div class="col-start-3 col-end-4" id="Chat">
 	<div
 		bind:this={chatContainer}
-		class="row-start-1 row-end-2 h-[calc(100dvh-8rem)] overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-500"
+		class="row-start-1 row-end-2 h-[calc(100dvh-8rem)] overflow-y-scroll scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-500"
 	>
-		<div class="grid justify-items-end gap-2 p-2">
-			{#each messages as m}
-				<div class="min-w-36 rounded-lg rounded-br-none border-2 border-slate-900 p-4">
-					<p>{m.content}</p>
-				</div>
+		<div class="grid justify-items-end p-2">
+			{#each messages as m, i}
+      {new Date(messages[i].createdAt).getDate()}
+				{#if messages[i+1] && new Date(messages[i].createdAt).getDate() === new Date(messages[i + 1].createdAt).getDate() + 1}
+					<div class="text-2xl">Here Here Here!</div>
+				{/if}
+				<Message {...m} />
 			{/each}
 		</div>
 	</div>
